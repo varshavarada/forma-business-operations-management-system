@@ -1,6 +1,6 @@
 # Forma release report
 
-Forma — Business Operations Management System is an implemented, locally verified MCA project for a single business. It connects accounts and roles, customers, products/services, inventory, orders, manual payment tracking, dashboards, operational reports and activity history. This report covers the completed application in commit `9860770`, dated 9 October 2026. Deployment and production operation remain unverified.
+Forma — Business Operations Management System is an implemented, locally verified MCA project for a single business. It connects accounts and roles, customers, products/services, inventory, orders, manual payment tracking, dashboards, operational reports and activity history. This report covers the completed application in commit `4fb62b9`, dated 9 October 2026. Deployment and production operation remain unverified.
 
 ## Functionality and pages
 
@@ -51,7 +51,7 @@ Application files:
 - `package.json`, `package-lock.json`, `.gitignore`, `.env.example`, `README.md`.
 - Documentation: requirements, architecture, API, security, verification, progress, viva, this report, the local demo guide and LinkedIn draft. Generated JSON evidence and screenshots are excluded.
 
-Dependencies and generated Playwright reports are local supporting artifacts. The repository includes only the synthetic `.env.example` template; private configuration is ignored. The completed application is committed on `main` as `9860770`, preserving the initial backend commit `a36585f`. At the documentation review, no remote was configured and the project had not been pushed, published, or deployed.
+Dependencies and generated Playwright reports are local supporting artifacts. The repository includes only the synthetic `.env.example` template; private configuration is ignored. The completed application is committed on `main` as `4fb62b9`, preserving the initial backend commit `47c4f57`. At the documentation review, no remote was configured and the project had not been pushed, published, or deployed.
 
 ## Setup and demonstration
 
@@ -83,8 +83,8 @@ Both full suites completed once with isolated synthetic databases after sandbox 
 
 Historical closeout edits: README.md; docs/architecture.md; docs/api.md; docs/verification.md; docs/viva.md; docs/release-report.md; .gitignore. Added: docs/demo-guide.md and docs/linkedin-summary.md. Application code and test definitions were unchanged. The browser suite regenerated docs/evidence/dashboard.png, test-results/ and playwright-report/; fixture helpers also updated .cache/. These generated artifacts are excluded.
 
-The publication review found no real credentials or private keys in tracked files or the two-commit history. `.env.example` contains loopback configuration and a blank secret; embedded demo and test credentials are synthetic. Both commits retain the original author details, including a personal email address.
+The publication preparation checked all three rewritten commits and every object in the publication repository for personal Gmail addresses and recognized credential patterns; none were found. `.env.example` contains loopback configuration and a blank secret; embedded demo and test credentials are synthetic. All three commits use the GitHub noreply address for author and committer email metadata.
 
 Ignore rules cover private environment files, credential/key files, temporary databases, screenshots, traces, logs and generated reports. These patterns prevent accidental additions but cannot remove already tracked files.
 
-The working tree was clean when the documentation review began. These documentation corrections are separate from the completed release commit; no new commit, remote configuration, push, publication, or deployment was made during the review.
+On 10 October 2026, a separate publication copy was prepared from the completed project. The email rewrite preserved committed files, messages, author names, timestamps, and parent relationships. Documentation references were updated to the rewritten commit IDs. The private original remains unchanged; GitHub publication and deployment are still pending.

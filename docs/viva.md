@@ -52,7 +52,7 @@ For a project presentation, use [the synthetic demo guide](demo-guide.md). State
 
 **What do delayed report and expired-session tests establish?** Browser cases verify that old report responses do not replace a newer page/report and that revoked or simulated expired-session responses render a clean login without uncaught errors. Actual session expiration is tested in the backend. These cases do not prove every network timing or browser behavior.
 
-**What is the release status?** The completed Forma application is recorded in commit `9860770`, dated 9 October 2026, preserving the initial backend commit `a36585f`. At the documentation review, no remote was configured and publication had not taken place. Local passing tests cover the exercised workflows; Atlas connectivity, deployment, proxy/TLS operation, recovery, other browsers, and production capacity remain unverified.
+**What is the release status?** The completed Forma application is recorded in commit `4fb62b9`, dated 9 October 2026, preserving the initial backend commit `47c4f57`. At the documentation review, no remote was configured and publication had not taken place. Local passing tests cover the exercised workflows; Atlas connectivity, deployment, proxy/TLS operation, recovery, other browsers, and production capacity remain unverified.
 
 - Login fails: verify configured origin, account activity, exact email, and password; do not print credentials.
 - Confirmation fails: check customer/item archival, available stock, current order state, and transaction-capable topology.

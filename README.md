@@ -2,7 +2,7 @@
 
 Forma is an MCA mini-project for a small business selling stocked products and services. It connects customer records, a catalog, stock movements, sales orders, manual payment tracking, operational reports, and audit history. Administrator, Manager, and Staff roles control access to business operations.
 
-The completed application is recorded in release commit `9860770`, dated 9 October 2026, following the initial backend commit `a36585f`. It has been verified locally; deployment and production operation remain unverified.
+The completed application is recorded in release commit `4fb62b9`, dated 9 October 2026, following the initial backend commit `47c4f57`. It has been verified locally; deployment and production operation remain unverified.
 
 ## Engineering choices
 

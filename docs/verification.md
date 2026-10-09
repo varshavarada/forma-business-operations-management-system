@@ -6,7 +6,7 @@ Run `npm test` and `npm run test:browser` from the project directory to check yo
 
 ## Recorded environment
 
-- Release source: commit `9860770`, dated 9 October 2026, with the earlier backend commit `a36585f` preserved.
+- Release source: commit `4fb62b9`, dated 9 October 2026, with the earlier backend commit `47c4f57` preserved.
 - Windows `10.0.26200`, Node `v24.20.0`, npm `11.19.0`.
 - Intel i3-1115G4, 4 logical processors, 7,886 MiB system memory reported to Node.
 - Real MongoDB `7.0.14` processes managed as isolated local replica sets; a separate standalone fixture verifies topology rejection.
