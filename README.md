@@ -1,19 +1,22 @@
-# Business Operations Management System
+# Forma — Business Operations Management System
 
-An MCA mini-project for a small business selling stocked products and services. Forma is the original interface name used by this project. The application connects customer records, a catalog, stock movements, sales orders, manual payment tracking, operational reporting, and audit history.
+Forma is an MCA mini-project for a small business selling stocked products and services. It connects customer records, a catalog, stock movements, sales orders, manual payment tracking, operational reports, and audit history. Administrator, Manager, and Staff roles control access to business operations.
 
-Built from scratch in `D:\business-operations-management-system`. No earlier project was imported. No commit, push, or deployment has been performed.
+The completed application is recorded in release commit `9860770`, dated 9 October 2026, following the initial backend commit `a36585f`. It has been verified locally; deployment and production operation remain unverified.
 
-## Technology and frontend decision
+## Engineering choices
 
-Node.js, Express 5, MongoDB, Mongoose, Zod, Argon2, Helmet, and server-side sessions. The frontend uses browser JavaScript modules and reusable rendering/form helpers with shared CSS tokens. There is no bundler, framework runtime, external font request, or UI component library. Same-origin delivery simplifies cookies, CSRF, setup, and debugging. This approach fits a small operations application; larger teams may benefit from a framework once the component/state complexity warrants it.
+The backend uses Node.js, Express 5, MongoDB, Mongoose, Zod, Argon2, Helmet, and server-side sessions. MongoDB transactions keep stock changes, order state, audit events, and saved submission results together. Idempotency keys handle duplicate submissions, customer version checks reject stale edits, and bounded integer amounts avoid floating-point rounding in money calculations.
+
+The frontend uses browser JavaScript modules, shared rendering and form helpers, and CSS tokens. Serving it from the same origin keeps cookie sessions, CSRF checks, and local setup straightforward. A small module-based frontend fits this project; a framework may help if its component and state management become more complex.
 
 ## Run an isolated demonstration
 
-Requires Node 24, npm, and internet access on the first run to download the isolated MongoDB 7.0.14 binary. The Windows binary is approximately 592 MB compressed. Tests and demo helpers never use `MONGODB_URI` and never connect to Atlas.
+Requires Node.js 24 and npm. Download and extract the repository ZIP, or clone it using the URL from GitHub's **Code** menu. Open a terminal in the extracted or cloned project directory, where `package.json` is located. All commands below run from that directory. The administrator credential commands in the persistent setup section use PowerShell.
 
-```powershell
-Set-Location D:\business-operations-management-system
+The first demo or test run needs internet access to download MongoDB 7.0.14 unless the binary is already cached. The Windows binary is approximately 592 MB compressed. Tests and demo helpers create an isolated local database and never use `MONGODB_URI` or connect to Atlas.
+
+```sh
 npm ci
 npm run demo
 ```
@@ -30,7 +33,9 @@ Synthetic password for these test-only accounts: `SyntheticPass123!`. These cred
 
 ## Run with your persistent database
 
-Use a dedicated application database on a transaction-capable replica set or supported sharded deployment. Startup checks the topology. A standalone MongoDB server is refused. No Atlas credentials have been supplied or tested in this workspace.
+Use a dedicated application database on a transaction-capable replica set or supported sharded deployment. Startup checks the topology. A standalone MongoDB server is refused. Atlas connectivity has not been validated.
+
+After installing dependencies with `npm ci`, run these commands from the project directory:
 
 ```powershell
 npm run configure
@@ -61,11 +66,11 @@ npm test
 npm run test:browser
 ```
 
-Backend tests use a real isolated MongoDB replica set. Browser tests create their own database/server and close both afterward. On this Windows machine the runner detects installed Google Chrome; otherwise install Playwright Chromium with `npx playwright install chromium`, or select an installed browser through `PLAYWRIGHT_CHANNEL`. Downloads and native process launch may require environment approval.
+Backend tests use a real isolated MongoDB replica set. Browser tests create their own database/server and close both afterward. On Windows, the runner detects Google Chrome at its standard installation path; otherwise install Playwright Chromium with `npx playwright install chromium`, or select an installed browser through `PLAYWRIGHT_CHANNEL`. Restricted environments may require permission to download binaries or launch local processes.
 
-Release closeout on 9 October 2026: **18 backend tests and 15 Chrome browser cases passed**, with no failures or skips. Both suites used isolated synthetic databases. See [verification results](docs/verification.md) for coverage and limits. Run tests sequentially on resource-constrained machines.
+Recorded release verification on 9 October 2026: **18 backend tests and 15 Chrome browser cases passed**, with no failures or skips. Both suites used isolated synthetic databases. The committed [verification summary](docs/verification.md) records coverage, timings, and limits; it does not include raw test console output. Run tests sequentially on resource-constrained machines.
 
-The optional `npm run benchmark` writes `docs/evidence/performance.json`; it was not rerun for closeout. Browser screenshots, traces, reports and generated benchmark evidence are excluded by `.gitignore`.
+The optional `npm run benchmark` generates `docs/evidence/performance.json` locally. The committed verification summary includes the earlier benchmark results; the benchmark was not rerun for release verification. Generated JSON, screenshots, traces, and browser reports are ignored and absent from a fresh clone. New runs produce results for your environment rather than reproducing the recorded timings exactly.
 
 ## Main workflow
 
@@ -92,4 +97,6 @@ The optional `npm run benchmark` writes `docs/evidence/performance.json`; it was
 - [Implementation progress](docs/progress.md)
 - [Local release report](docs/release-report.md)
 
-This is a verified local portfolio application, not a claim of commercial production readiness. It is a single-business system, not a subscription or multitenant platform.
+Forma supports one business. Payments are manual receipt records; there is no payment gateway, tax engine, returns workflow, password recovery, or MFA. Reports use order-creation dates and current balances, so they are operational summaries rather than historical accounting statements.
+
+Atlas connectivity, deployment, HTTPS/proxy behavior, backups, other browsers, and production capacity remain unverified. Search, deep pagination, aggregates, and history retention need further work as data grows. See the [requirements and limitations](docs/requirements.md) and [security boundaries](docs/security.md) for details.

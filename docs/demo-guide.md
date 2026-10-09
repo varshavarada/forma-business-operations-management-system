@@ -1,10 +1,10 @@
-# Local demonstration guide
+# Forma demonstration guide
 
 Use only synthetic local data. Do not run `configure`, `seed`, `db:indexes` or `start` for this demonstration.
 
 ## Start and sign in
 
-Prerequisites: Node 24, installed npm dependencies, cached MongoDB 7.0.14 binary (first use needs a download), and a modern browser. From the project directory run:
+Prerequisites: Node.js 24, npm dependencies installed with `npm ci`, and a modern browser. MongoDB 7.0.14 is downloaded on first use unless already cached. Follow the [README setup instructions](../README.md#run-an-isolated-demonstration) to clone or download Forma, then run this command from the project directory:
 
 ```powershell
 npm run demo
@@ -31,4 +31,4 @@ Use two signed-in browser windows. Open the same customer's edit dialog in both.
 
 Press Ctrl+C in the demo terminal; graceful shutdown closes the server and temporary database. Run `npm run demo` again for fresh accounts and empty business records. Never delete or reset a supplied database. Share no screenshots or exports containing private data; generated images and reports are ignored.
 
-If startup is blocked by process permissions, obtain local permission to launch MongoDB. If the binary is missing or download fails, report the setup issue; do not substitute Atlas. Tonight's release evidence is 18/18 backend and 15/15 Chrome cases passing; other browsers and production operation remain unverified.
+If startup is blocked by process permissions, obtain local permission to launch MongoDB. If the binary is missing or download fails, report the setup issue; do not substitute Atlas. The committed [verification summary](verification.md) records 18 backend tests and 15 Chrome cases passing on 9 October 2026. Generated screenshots and reports are local and ignored; other browsers and production operation remain unverified.

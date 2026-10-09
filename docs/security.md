@@ -22,4 +22,4 @@ Automated tests verify role gates, CSRF/origin rejection, missing authentication
 
 External MongoDB credentials, TLS/proxy behavior, Atlas network permissions, backups/restoration, secret rotation, monitoring, production index migrations, high-load abuse, and real-user access reviews have not been validated. There is no email password recovery or MFA. No actual financial processing occurs.
 
-For a persistent deployment, store secrets outside version control, use least-privileged database credentials for the application, use a separate migration identity where appropriate, enable HTTPS, configure backups and recovery, and define audit/idempotency retention. These are deployment requirements, not actions already performed by this agent.
+For a persistent deployment, store secrets outside version control, use least-privileged database credentials for the application, use a separate migration identity where appropriate, enable HTTPS, configure backups and recovery, and define audit/idempotency retention. These steps remain operational requirements; they have not been validated in a deployed environment.

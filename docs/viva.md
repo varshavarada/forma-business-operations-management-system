@@ -1,4 +1,4 @@
-# MCA defense preparation
+# Forma MCA defense preparation
 
 ## Presentation structure
 
@@ -38,7 +38,7 @@ Explain the problem: separate business records cause duplicated orders and incon
 
 **Why no React, Redis, or microservices?** A small same-origin module frontend and modular Express server meet the approved scope with fewer setup and runtime dependencies. Added infrastructure would need demonstrated value and operational support.
 
-**What was actually measured?** Local HTTP reads against synthetic fixtures, including authorization; latency percentiles, payload bytes, query command counts, a representative query plan, startup time and Node process observations. Read the evidence file for exact environment and limits. No production capacity was proved.
+**What was actually measured?** Local HTTP reads against synthetic fixtures, including authorization; latency percentiles, payload bytes, query command counts, a representative query plan, startup time and Node process observations. See the committed [verification summary](verification.md) for the recorded environment and limits. Raw benchmark JSON is generated locally with `npm run benchmark` and is not included in the repository. No production capacity was proved.
 
 **How do tests avoid real customer data?** The harness creates and destroys its own local replica set. It never uses the supplied `MONGODB_URI`. Fixtures contain only synthetic records and test accounts.
 
@@ -46,13 +46,13 @@ Explain the problem: separate business records cause duplicated orders and incon
 
 ## Debugging guide
 
-For tonight's presentation, use [the synthetic demo guide](demo-guide.md). State the current evidence precisely: 18 backend tests and 15 Chrome cases passed with no failures or skips on 9 October 2026. The earlier benchmark was not rerun for closeout. Core manual demonstrations were reported by the user; this closeout run supplies automated regression evidence.
+For a project presentation, use [the synthetic demo guide](demo-guide.md). State the current evidence precisely: 18 backend tests and 15 Chrome cases passed with no failures or skips on 9 October 2026. The earlier benchmark was not rerun for closeout. Manual demonstrations were reported separately; the closeout results are automated regression evidence.
 
 **How do you avoid overwriting a customer's concurrent edit?** Each customer carries a version. An update must match the version read; successful updates increment it. Stale saves return `409 EDIT_CONFLICT`. Reload retrieves the latest server fields while retaining local changes for review. Two backend tests and a browser conflict-recovery case verify this behavior.
 
 **What do delayed report and expired-session tests establish?** Browser cases verify that old report responses do not replace a newer page/report and that revoked or simulated expired-session responses render a clean login without uncaught errors. Actual session expiration is tested in the backend. These cases do not prove every network timing or browser behavior.
 
-**Is the project published or production-ready?** No. This is a local single-business release. Atlas, deployment, real proxy/TLS operation, recovery, other browsers and production capacity remain unverified. The D: release now has independent Git metadata preserving existing history from commit `a36585f`. Release changes are staged on `main`, with no remote configured. At this pre-commit review, no commit, push or deployment has occurred for this release yet.
+**What is the release status?** The completed Forma application is recorded in commit `9860770`, dated 9 October 2026, preserving the initial backend commit `a36585f`. At the documentation review, no remote was configured and publication had not taken place. Local passing tests cover the exercised workflows; Atlas connectivity, deployment, proxy/TLS operation, recovery, other browsers, and production capacity remain unverified.
 
 - Login fails: verify configured origin, account activity, exact email, and password; do not print credentials.
 - Confirmation fails: check customer/item archival, available stock, current order state, and transaction-capable topology.

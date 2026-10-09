@@ -1,10 +1,11 @@
-# Implementation progress
+# Forma implementation progress
 
-- Stage A: verified the empty official workspace; no prior source imported; scope approved by the user.
-- Foundation: approved dependencies installed; same-origin Express server, validation, cookie sessions, CSRF, roles, centralized errors and request limits implemented.
+- Scope: a single-business MCA project covering customers, catalog, inventory, orders, manual payments, reporting, and access control.
+- Foundation: dependencies installed; same-origin Express server, validation, cookie sessions, CSRF, roles, centralized errors and request limits implemented.
 - Master data: customer/catalog editing and archival, bounded search/sort/pagination, stock adjustments and history implemented.
 - Transactions: order lifecycle, conditional stock operations, stored idempotent results, manual payment records/reversals and transactional audit implemented.
 - Product experience: responsive original interface, overview, catalog/customers/orders, management/history, operational reports and CSV export implemented.
 - Verification: isolated replica-set backend suite and Chrome workflow/layout suite executed; initial schema and retry failures were fixed and affected tests rerun.
-- Performance: synthetic read benchmark and representative query explain recorded. Final evidence is in `docs/evidence/` and `docs/verification.md`.
-- Release boundaries: no external database use, deployment, Git initialization/commit/push, or commercial-readiness claim.
+- Performance: synthetic read benchmark and representative query explain recorded. The committed [verification summary](verification.md) records the results. Generated files under `docs/evidence/` are local and ignored; `npm run benchmark` generates a new report.
+- Release: completed application committed as `9860770` on 9 October 2026, preserving the initial backend commit `a36585f`. At the documentation review, no remote was configured and publication had not taken place.
+- Verification boundaries: tests used isolated synthetic databases. Atlas connectivity, deployment, and production operation remain unverified.
