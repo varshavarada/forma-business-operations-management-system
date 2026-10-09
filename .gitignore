@@ -1,18 +1,45 @@
-# Dependencies
 node_modules/
-
-# Environment variables / secrets
 .env
 .env.*
+!.env.example
+test-results/
+playwright-report/
+.cache/
 
-# Build output
-dist/
-build/
+# Private configuration and credentials (only the synthetic template is shareable).
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+.aws/
+secrets/
 
-# Logs
+# Temporary database files, exports, logs and browser artifacts.
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
 *.log
+*.tmp
+*.bak
+tmp/
+temp/
+data/
+dump/
+mongodb-data/
+blob-report/
+playwright/.auth/
+traces/
+screenshots/
+reports/
+coverage/
+*.har
+*.zip
+*.webm
 
-# OS / editor files
-.DS_Store
-Thumbs.db
-.vscode/
+# Generated benchmark reports and screenshots: keep the reviewed Markdown summary.
+docs/evidence/
+*.png
+*.jpg
+*.jpeg

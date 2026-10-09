@@ -1,0 +1,32 @@
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+const options = { timestamps: true, strict: 'throw' };
+const ref = (name) => ({ type: Schema.Types.ObjectId, ref: name, required: true });
+const integer = (min, max, defaultValue) => ({ type: Number, min, max, required: true, validate: Number.isSafeInteger, ...(defaultValue !== undefined ? { default: defaultValue } : {}) });
+const model = (name, fields, indexes = []) => {
+  const schema = new Schema(fields, options);
+  for (const [keys, opts] of indexes) schema.index(keys, opts);
+  if (name === 'Order') schema.pre('validate', function () {
+    if (!this.items.length || this.items.length > 50 || new Set(this.items.map(i => String(i.product))).size !== this.items.length) this.invalidate('items', 'Use 1–50 distinct catalog items');
+    if (this.items.reduce((sum, item) => sum + item.price * item.quantity, 0) !== this.total) this.invalidate('total', 'Total must equal line amounts');
+    if (this.paid > this.total) this.invalidate('paid', 'Paid amount exceeds total');
+  });
+  return mongoose.model(name, schema);
+};
+export const User = model('User', { name: String, email: { type: String, unique: true, required: true }, passwordHash: { type: String, required: true }, role: { type: String, enum: ['Administrator', 'Manager', 'Staff'], required: true }, active: { type: Boolean, default: true } });
+export const Session = model('Session', { hash: { type: String, unique: true }, csrf: String, user: ref('User'), expiresAt: Date }, [[{ expiresAt: 1 }, { expireAfterSeconds: 0 }]]);
+export const Customer = model('Customer', { code: { type: String, unique: true, required: true }, name: { type: String, required: true }, email: String, phone: String, archived: { type: Boolean, default: false }, version: { type: Number, default: 0 } }, [[{ archived: 1, createdAt: -1, _id: -1 }, {}]]);
+export const Product = model('Product', { sku: { type: String, unique: true, required: true }, name: { type: String, required: true }, type: { type: String, enum: ['product', 'service'], required: true }, price: integer(0, 100000000), stock: integer(0, 1000000000, 0), reorderLevel: integer(0, 100000, 0), archived: { type: Boolean, default: false }, version: { type: Number, default: 0 } }, [[{ archived: 1, createdAt: -1, _id: -1 }, {}]]);
+export const Order = model('Order', { number: { type: String, unique: true }, customer: ref('Customer'), customerName: String, items: [{ _id: false, product: ref('Product'), name: String, type: { type: String, enum: ['product', 'service'] }, price: integer(0, 100000000), quantity: integer(1, 100000) }], total: integer(0, 100000000000), paid: integer(0, 100000000000, 0), status: { type: String, enum: ['draft', 'confirmed', 'fulfilled', 'cancelled'], default: 'draft' }, createdBy: ref('User') }, [[{ status: 1, createdAt: -1, _id: -1 }, {}], [{ customer: 1, createdAt: -1 }, {}]]);
+export const Movement = model('Movement', { product: ref('Product'), order: { type: Schema.Types.ObjectId, ref: 'Order' }, delta: integer(-100000, 100000), reason: String, actor: ref('User') }, [[{ product: 1, createdAt: -1, _id: -1 }, {}]]);
+export const Payment = model('Payment', { order: ref('Order'), amount: integer(-100000000, 100000000), reference: String, reversalOf: { type: Schema.Types.ObjectId, ref: 'Payment' }, reversed: { type: Boolean, default: false }, actor: ref('User') }, [[{ order: 1, createdAt: -1, _id: -1 }, {}]]);
+export const Audit = model('Audit', { actor: ref('User'), action: String, entity: String, entityId: String, detail: String }, [[{ createdAt: -1, _id: -1 }, {}]]);
+export const Operation = model('Operation', { key: { type: String, unique: true }, fingerprint: String, result: Schema.Types.Mixed });
+export const Policy = model('Policy', { key: { type: String, unique: true }, version: { type: Number, default: 0 } });
+Customer.schema.index({ archived: 1, name: 1, _id: 1 });
+Product.schema.index({ archived: 1, name: 1, _id: 1 });
+Product.schema.index({ archived: 1, type: 1, stock: 1 });
+Order.schema.index({ createdAt: -1, _id: -1 });
+Movement.schema.index({ createdAt: -1, _id: -1 });
+User.schema.index({ createdAt: -1, _id: -1 });
+Session.schema.index({ user: 1 });

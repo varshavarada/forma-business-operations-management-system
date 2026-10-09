@@ -1,0 +1,29 @@
+{
+  "name": "business-operations-management-system",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file=.env server/index.js",
+    "dev": "node --env-file=.env --watch server/index.js",
+    "test": "node --test --test-concurrency=1 tests/*.test.js",
+    "test:browser": "node scripts/run-browser.js",
+    "seed": "node --env-file=.env scripts/seed.js",
+    "db:indexes": "node --env-file=.env scripts/indexes.js",
+    "demo": "node scripts/demo.js",
+    "benchmark": "node scripts/benchmark.js",
+    "configure": "node scripts/configure.js"
+  },
+  "dependencies": {
+    "argon2": "^0.44.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "mongoose": "^8.19.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "mongodb-memory-server": "^10.2.0"
+  }
+}

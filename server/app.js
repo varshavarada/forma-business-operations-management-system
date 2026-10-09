@@ -1,18 +1,32 @@
-const express = require("express");
-const cors = require("cors");
-
-const app = express();  //express() creates backend application instance
-
-// Middleware
-app.use(cors()); //cors() allows the frontend to communicate with the API 
-app.use(express.json()); // lets express understand JSON data in the request body
-
-// Health check route
-app.get("/api/health", (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "Business Operations Management System API is running"
-    });
+import express from 'express';
+import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
+import argon2 from 'argon2';
+import { randomBytes, randomUUID } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { z } from 'zod';
+import { Policy } from './models.js';
+import { registerAuth } from './routes/auth.js';
+import { registerMaster } from './routes/master.js';
+import { registerOrders } from './routes/orders.js';
+import { registerManagement } from './routes/management.js';
+import { registerReporting } from './routes/reporting.js';
+export const app = express();
+app.disable('x-powered-by');
+app.use(helmet());
+app.use((req, res, next) => { req.requestId = randomUUID(); res.set('X-Request-ID', req.requestId); const started = performance.now(); res.on('finish', () => { if (process.env.LOG_REQUESTS === 'true') console.log(JSON.stringify({ event: 'request.completed', requestId: req.requestId, method: req.method, route: req.route?.path || 'unmatched', status: res.statusCode, durationMs: Math.round(performance.now() - started) })); }); next(); });
+app.use(express.json({ limit: '32kb' }));
+app.use('/api', rateLimit({ windowMs: 60000, limit: 300, standardHeaders: 'draft-8', legacyHeaders: false, handler: (req, res) => res.status(429).json({ error: 'Request limit reached. Try again shortly.', requestId: req.requestId }) }));
+registerAuth(app);
+registerMaster(app);
+registerOrders(app);
+registerManagement(app);
+registerReporting(app);
+app.use('/api', (req, res) => res.status(404).json({ error: 'Endpoint not found' }));
+app.use(express.static(fileURLToPath(new URL('../client', import.meta.url))));
+app.use((error, req, res, next) => {
+  const status = error instanceof z.ZodError ? 400 : error.code === 11000 ? 409 : error.status || 500;
+  if (status === 500) console.error(JSON.stringify({ requestId: req.requestId, event: 'request.failed', type: error.name, code: error.code, field: error.path }));
+  res.status(status).json({ error: status === 500 ? 'Operation failed. Check database availability and transaction support.' : error instanceof z.ZodError ? 'Invalid request fields' : error.type === 'entity.parse.failed' ? 'Malformed JSON request' : error.code === 11000 ? 'A unique value already exists' : error.message, ...(error.code === 'EDIT_CONFLICT' ? { code: error.code } : {}), requestId: req.requestId });
 });
-
-module.exports = app;
+export async function initialize() { if (!process.env.IDEMPOTENCY_SECRET || process.env.IDEMPOTENCY_SECRET.length < 32) throw new Error('Configure a private IDEMPOTENCY_SECRET of at least 32 characters'); app.locals.dummyHash = await argon2.hash(randomBytes(32)); await Policy.updateOne({ key: 'administrators' }, { $setOnInsert: { version: 0 } }, { upsert: true }); }
