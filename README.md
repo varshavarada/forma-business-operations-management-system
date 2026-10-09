@@ -1,16 +1,39 @@
 # Forma — Business Operations Management System
 
+## Project overview
+
 Forma is an MCA mini-project for a small business selling stocked products and services. It connects customer records, a catalog, stock movements, sales orders, manual payment tracking, operational reports, and audit history. Administrator, Manager, and Staff roles control access to business operations.
 
-The completed application is recorded in release commit `4fb62b9`, dated 9 October 2026, following the initial backend commit `47c4f57`. It has been verified locally; deployment and production operation remain unverified.
+Forma brings customer, stock, order, and payment records into one workflow so that a sale can be followed from draft through fulfillment. It is a locally verified portfolio project; deployment and production operation remain unverified.
 
-## Engineering choices
+## Key features
 
-The backend uses Node.js, Express 5, MongoDB, Mongoose, Zod, Argon2, Helmet, and server-side sessions. MongoDB transactions keep stock changes, order state, audit events, and saved submission results together. Idempotency keys handle duplicate submissions, customer version checks reject stale edits, and bounded integer amounts avoid floating-point rounding in money calculations.
+- Customer records with editing, archival, search, sorting, and pagination.
+- A product and service catalog, stock adjustments with reasons, movement history, and low-stock review.
+- Sales orders with server-calculated prices, draft confirmation, fulfillment, and cancellation.
+- Manual payment records, partial payments, and linked reversals; no funds are processed.
+- A dashboard, date-bounded sales and outstanding-balance reports, inventory snapshots, and sales CSV export.
+- Administrator, Manager, and Staff permissions, account management, password changes, session revocation, and audit history.
+
+## Tech stack
+
+- **Backend:** Node.js 24, Express 5, MongoDB, and Mongoose.
+- **Validation and security:** Zod, Argon2, Helmet, and server-side cookie sessions.
+- **Frontend:** browser JavaScript modules and CSS, served by Express from the same origin.
+- **Verification:** Node.js test runner, Playwright, and isolated MongoDB replica sets managed by mongodb-memory-server.
+
+## Engineering highlights
+
+- **Transactional stock updates:** confirmation and cancellation keep stock changes, order state, movements, audit events, and saved submission results together.
+- **Duplicate and concurrent submissions:** idempotency keys handle retries, and customer version checks reject stale edits.
+- **Money calculations:** amounts use bounded integer minor units, and reports reject sums outside the supported safe-integer range.
+- **Server-side access control:** role checks protect operations independently of which controls the browser displays. Cookie sessions and origin/CSRF checks protect authenticated writes.
 
 The frontend uses browser JavaScript modules, shared rendering and form helpers, and CSS tokens. Serving it from the same origin keeps cookie sessions, CSRF checks, and local setup straightforward. A small module-based frontend fits this project; a framework may help if its component and state management become more complex.
 
-## Run an isolated demonstration
+<a id="run-an-isolated-demonstration"></a>
+
+## Quick start / isolated demo
 
 Requires Node.js 24 and npm. Download and extract the repository ZIP, or clone it using the URL from GitHub's **Code** menu. Open a terminal in the extracted or cloned project directory, where `package.json` is located. All commands below run from that directory. The administrator credential commands in the persistent setup section use PowerShell.
 
@@ -31,7 +54,19 @@ Open the loopback address printed by the demo. Synthetic accounts:
 
 Synthetic password for these test-only accounts: `SyntheticPass123!`. These credentials are never automatically created in an external database. Demo data is temporary and removed when the demo fixture stops.
 
-## Run with your persistent database
+### Example workflow
+
+1. Sign in as administrator. Add a customer and a catalog product priced at 125.50.
+2. Record opening stock of 10 with an adjustment reason.
+3. Create a draft order for quantity 2. Inventory remains 10.
+4. Confirm the order. Inventory becomes 8; total is 251.00.
+5. Record a received payment of 251.00. No money is processed by this application.
+6. Mark the order fulfilled. Dashboard, reports, and activity history reflect the persisted records.
+7. Demonstrate a second order that exceeds available stock: confirmation fails without partial stock deductions.
+8. Demonstrate a confirmed, unfulfilled order cancellation: reverse recorded payments first; cancellation restores product stock once.
+9. Sign in as Staff and demonstrate forbidden management operations, including direct API rejection.
+
+## Persistent database setup
 
 Use a dedicated application database on a transaction-capable replica set or supported sharded deployment. Startup checks the topology. A standalone MongoDB server is refused. Atlas connectivity has not been validated.
 
@@ -59,7 +94,7 @@ For production configuration, use `NODE_ENV=production`, an HTTPS `APP_ORIGIN`, 
 
 With the sample local origin, open `http://localhost:3000`. Keep the database URI and generated fingerprint key private.
 
-## Verification commands
+## Verification and testing
 
 ```powershell
 npm test
@@ -71,18 +106,6 @@ Backend tests use a real isolated MongoDB replica set. Browser tests create thei
 Recorded release verification on 9 October 2026: **18 backend tests and 15 Chrome browser cases passed**, with no failures or skips. Both suites used isolated synthetic databases. The committed [verification summary](docs/verification.md) records coverage, timings, and limits; it does not include raw test console output. Run tests sequentially on resource-constrained machines.
 
 The optional `npm run benchmark` generates `docs/evidence/performance.json` locally. The committed verification summary includes the earlier benchmark results; the benchmark was not rerun for release verification. Generated JSON, screenshots, traces, and browser reports are ignored and absent from a fresh clone. New runs produce results for your environment rather than reproducing the recorded timings exactly.
-
-## Main workflow
-
-1. Sign in as administrator. Add a customer and a catalog product priced at 125.50.
-2. Record opening stock of 10 with an adjustment reason.
-3. Create a draft order for quantity 2. Inventory remains 10.
-4. Confirm the order. Inventory becomes 8; total is 251.00.
-5. Record a received payment of 251.00. No money is processed by this application.
-6. Mark the order fulfilled. Dashboard, reports, and activity history reflect the persisted records.
-7. Demonstrate a second order that exceeds available stock: confirmation fails without partial stock deductions.
-8. Demonstrate a confirmed, unfulfilled order cancellation: reverse recorded payments first; cancellation restores product stock once.
-9. Sign in as Staff and demonstrate forbidden management operations, including direct API rejection.
 
 ## Documentation
 
@@ -96,6 +119,8 @@ The optional `npm run benchmark` generates `docs/evidence/performance.json` loca
 - [LinkedIn project summary draft](docs/linkedin-summary.md)
 - [Implementation progress](docs/progress.md)
 - [Local release report](docs/release-report.md)
+
+## Known limitations
 
 Forma supports one business. Payments are manual receipt records; there is no payment gateway, tax engine, returns workflow, password recovery, or MFA. Reports use order-creation dates and current balances, so they are operational summaries rather than historical accounting statements.
 
