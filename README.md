@@ -60,6 +60,8 @@ Open the loopback address printed by the demo. Synthetic accounts:
 
 Synthetic password for these test-only accounts: `SyntheticPass123!`. These credentials are never automatically created in an external database. Demo data is temporary and removed when the demo fixture stops.
 
+For the populated professional scenario (150 customers, 40 catalog items and 200 orders across six months), use `npm run demo:professional`. To generate its five article figures and CSV, use `npm run demo:capture`. Both create their own temporary replica set; the original demo and regression fixtures remain minimal. See [professional demo instructions](docs/professional-demo.md) and [targeted Hashnode revisions](docs/hashnode-revisions.md).
+
 ### Example workflow
 
 1. Sign in as administrator. Add a customer and a catalog product priced at 125.50.

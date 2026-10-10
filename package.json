@@ -11,6 +11,8 @@
     "seed": "node --env-file=.env scripts/seed.js",
     "db:indexes": "node --env-file=.env scripts/indexes.js",
     "demo": "node scripts/demo.js",
+    "demo:professional": "node scripts/run-professional-demo.js",
+    "demo:capture": "node scripts/capture-professional-demo.js",
     "benchmark": "node scripts/benchmark.js",
     "configure": "node scripts/configure.js"
   },

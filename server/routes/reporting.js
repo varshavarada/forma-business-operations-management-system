@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { Customer, Product, Order } from '../models.js';
 import { fail, manager } from '../core.js';
+import { sixMonthPeriod, monthlyBuckets } from '../reporting-period.js';
 const safeTotals = rows => {
   for (const row of rows) for (const key of ['sales', 'paid', 'orders', 'total', 'count']) {
     if (row[key] !== undefined && !Number.isSafeInteger(row[key])) fail(503, 'Report totals exceed the supported integer range');
@@ -9,13 +10,20 @@ const safeTotals = rows => {
 
 export function registerReporting(app) {
 app.get('/api/dashboard', async (req, res) => {
+  const mode = z.enum(['daily', 'monthly']).parse(req.query.trend || 'daily');
+  const month = req.query.month === undefined ? undefined : z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/).refine(value => Number(value.slice(0, 4)) >= 2000 && Number(value.slice(0, 4)) <= 2100).parse(req.query.month);
+  const period = mode === 'monthly' ? sixMonthPeriod(month) : { from: new Date(Date.now() - 30 * 86400000) };
   const [totals, trend, lowStock, pending, customers, outstanding] = await Promise.all([
     Order.aggregate([{ $match: { status: { $in: ['confirmed', 'fulfilled'] } } }, { $group: { _id: null, sales: { $sum: '$total' }, paid: { $sum: '$paid' }, orders: { $sum: 1 } } }]),
-    Order.aggregate([{ $match: { status: { $in: ['confirmed', 'fulfilled'] }, createdAt: { $gte: new Date(Date.now() - 30 * 86400000) } } }, { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'Asia/Kolkata' } }, total: { $sum: '$total' } } }, { $sort: { _id: 1 } }]),
+    Order.aggregate([{ $match: { status: { $in: ['confirmed', 'fulfilled'] }, createdAt: { $gte: period.from, ...(period.to ? { $lt: period.to } : {}) } } }, { $group: { _id: { $dateToString: { format: mode === 'monthly' ? '%Y-%m' : '%Y-%m-%d', date: '$createdAt', timezone: 'Asia/Kolkata' } }, total: { $sum: '$total' } } }, { $sort: { _id: 1 } }]),
     Product.find({ archived: false, type: 'product', $expr: { $lte: ['$stock', '$reorderLevel'] } }).select('name sku stock reorderLevel').sort({ stock: 1 }).limit(10).lean(),
     Order.find({ status: 'confirmed' }).select('number customerName total paid createdAt').sort({ createdAt: 1 }).limit(10).lean(), Customer.countDocuments({ archived: false }),
     Order.find({ status: { $in: ['confirmed', 'fulfilled'] }, $expr: { $lt: ['$paid', '$total'] } }).select('number customerName total paid').sort({ createdAt: 1 }).limit(10).lean()
-  ]); safeTotals([...totals, ...trend]); res.json({ totals: totals[0] || { sales: 0, paid: 0, orders: 0 }, trend, lowStock, pending, customers, outstanding });
+  ]);
+  const buckets = mode === 'monthly' ? monthlyBuckets(trend, period.months) : trend;
+  const trendTotal = buckets.reduce((sum, row) => sum + row.total, 0);
+  safeTotals([...totals, ...buckets, { total: trendTotal }]);
+  res.json({ totals: totals[0] || { sales: 0, paid: 0, orders: 0 }, trend: buckets, trendPeriod: { mode, start: period.from, endExclusive: period.to || null, timezone: 'Asia/Kolkata', total: trendTotal }, lowStock, pending, customers, outstanding });
 });
 app.get('/api/reports', manager, async (req, res) => {
   const start = z.iso.date().parse(req.query.start); const end = z.iso.date().parse(req.query.end);

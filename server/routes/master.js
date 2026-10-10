@@ -4,7 +4,7 @@ import { fail, id, text, money, parse, manager, audit, mutate } from '../core.js
 
 export function registerMaster(app) {
 const customerSchema = z.object({ code: text.transform(s => s.toUpperCase()), name: text, email: z.string().email().max(254).or(z.literal('')), phone: z.string().max(30), archived: z.boolean().optional() });
-const productSchema = z.object({ sku: text.transform(s => s.toUpperCase()), name: text, type: z.enum(['product', 'service']), price: money, reorderLevel: z.number().int().min(0).max(100000), archived: z.boolean().optional() });
+const productSchema = z.object({ description: z.string().trim().max(240).optional(), sku: text.transform(s => s.toUpperCase()), name: text, type: z.enum(['product', 'service']), price: money, reorderLevel: z.number().int().min(0).max(100000), archived: z.boolean().optional() });
 app.get('/api/customers/:id', async (req, res) => {
   const doc = await Customer.findById(id.parse(req.params.id)).lean();
   if (!doc) fail(404, 'Record not found');
