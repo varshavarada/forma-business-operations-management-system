@@ -6,6 +6,12 @@ Forma is an MCA mini-project for a small business selling stocked products and s
 
 Forma brings customer, stock, order, and payment records into one workflow so that a sale can be followed from draft through fulfillment. It is a locally verified portfolio project; deployment and production operation remain unverified.
 
+## Technical Case Study
+
+Read the detailed technical case study covering FORMA's architecture, database design, security, transactional workflows, and testing.
+
+[FORMA: Building a Full-Stack Business Operations Management System](https://vaidehi.hashnode.dev/forma-building-a-full-stack-business-operations-management-system)
+
 ## Key features
 
 - Customer records with editing, archival, search, sorting, and pagination.
